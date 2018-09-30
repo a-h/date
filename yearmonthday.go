@@ -9,32 +9,12 @@ import (
 const formatStringYYYYMMDD = "2006-01-02"
 const parseJSONYYYYMMDD = "\"2006-01-02\""
 
-// NewYYYYMMDD creates a new YYYYMMDD date.
-func NewYYYYMMDD(t time.Time) YYYYMMDD {
-	return YYYYMMDD{
-		Year:  t.Year(),
-		Month: t.Month(),
-		Day:   t.Day(),
-	}
-}
-
 // YYYYMMDD provides a year, month and day type.
-type YYYYMMDD struct {
-	Year  int
-	Month time.Month
-	Day   int
-}
+type YYYYMMDD time.Time
 
 // MarshalJSON outputs JSON.
 func (d YYYYMMDD) MarshalJSON() ([]byte, error) {
-	if d.Year == 0 && d.Month == 0 && d.Day == 0 {
-		// Initialise to a minimum date, it's not possible to have a month of zero.
-		d.Year = 0
-		d.Month = time.January
-		d.Day = 1
-	}
-	t := time.Date(d.Year, d.Month, d.Day, 0, 0, 0, 0, time.UTC)
-	return []byte("\"" + t.Format(formatStringYYYYMMDD) + "\""), nil
+	return []byte("\"" + time.Time(d).Format(formatStringYYYYMMDD) + "\""), nil
 }
 
 // UnmarshalJSON handles incoming JSON.
@@ -46,15 +26,22 @@ func (d *YYYYMMDD) UnmarshalJSON(b []byte) (err error) {
 	if err != nil {
 		return
 	}
-	d.Year = t.Year()
-	d.Month = t.Month()
-	d.Day = t.Day()
+	*d = YYYYMMDD(t)
 	return
 }
 
-// Time returns a time.Time from the year, month and day.
-func (d YYYYMMDD) Time() time.Time {
-	return time.Date(d.Year, d.Month, d.Day, 0, 0, 0, 0, time.UTC)
+// String // String returns the time formatted using the format string
+//	"2006-01-02 15:04:05.999999999 -0700 MST"
+//
+// If the time has a monotonic clock reading, the returned string
+// includes a final field "m=±<value>", where value is the monotonic
+// clock reading formatted as a decimal number of seconds.
+//
+// The returned string is meant for debugging; for a stable serialized
+// representation, use t.MarshalText, t.MarshalBinary, or t.Format
+// with an explicit format string.
+func (d YYYYMMDD) String() string {
+	return time.Time(d).String()
 }
 
 // ErrInvalidDateFormatYYYYMMDD is returned when the field cannot be parsed.

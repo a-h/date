@@ -9,38 +9,12 @@ import (
 const formatStringYYYYMMDDHHMMSS = "2006-01-02T15:04:05"
 const parseJSONYYYYMMDDHHMMSS = "\"2006-01-02T15:04:05\""
 
-// NewYYYYMMDDHHMMSS creates a new yyyy-MM-ddThh:mm:ss date.
-func NewYYYYMMDDHHMMSS(t time.Time) YYYYMMDDHHMMSS {
-	return YYYYMMDDHHMMSS{
-		Year:   t.Year(),
-		Month:  t.Month(),
-		Day:    t.Day(),
-		Hour:   t.Hour(),
-		Minute: t.Minute(),
-		Second: t.Second(),
-	}
-}
-
 // YYYYMMDDHHMMSS provides a yyyy-MM-ddThh:mm:ss date.
-type YYYYMMDDHHMMSS struct {
-	Year   int
-	Month  time.Month
-	Day    int
-	Hour   int
-	Minute int
-	Second int
-}
+type YYYYMMDDHHMMSS time.Time
 
 // MarshalJSON outputs JSON.
 func (d YYYYMMDDHHMMSS) MarshalJSON() ([]byte, error) {
-	if d.Year == 0 && d.Month == 0 && d.Day == 0 {
-		// Initialise to a minimum date, it's not possible to have a month of zero.
-		d.Year = 0
-		d.Month = time.January
-		d.Day = 1
-	}
-	t := time.Date(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second, 0, time.UTC)
-	return []byte("\"" + t.Format(formatStringYYYYMMDDHHMMSS) + "\""), nil
+	return []byte("\"" + time.Time(d).Format(formatStringYYYYMMDDHHMMSS) + "\""), nil
 }
 
 // UnmarshalJSON handles incoming JSON.
@@ -52,18 +26,22 @@ func (d *YYYYMMDDHHMMSS) UnmarshalJSON(b []byte) (err error) {
 	if err != nil {
 		return
 	}
-	d.Year = t.Year()
-	d.Month = t.Month()
-	d.Day = t.Day()
-	d.Hour = t.Hour()
-	d.Minute = t.Minute()
-	d.Second = t.Second()
+	*d = YYYYMMDDHHMMSS(t)
 	return
 }
 
-// Time returns a time.Time from the year, month, day, hours, minutes and seconds.
-func (d YYYYMMDDHHMMSS) Time() time.Time {
-	return time.Date(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second, 0, time.UTC)
+// String // String returns the time formatted using the format string
+//	"2006-01-02 15:04:05.999999999 -0700 MST"
+//
+// If the time has a monotonic clock reading, the returned string
+// includes a final field "m=±<value>", where value is the monotonic
+// clock reading formatted as a decimal number of seconds.
+//
+// The returned string is meant for debugging; for a stable serialized
+// representation, use t.MarshalText, t.MarshalBinary, or t.Format
+// with an explicit format string.
+func (d YYYYMMDDHHMMSS) String() string {
+	return time.Time(d).String()
 }
 
 // ErrInvalidDateFormatYYYYMMDDHHMMSS is returned when the field cannot be parsed.

@@ -36,8 +36,8 @@ func main() {
 		fmt.Println("Error unmarshalling data: ", err)
 		return
 	}
-	fmt.Println(e.YMD.Time())
-	fmt.Println(e.YMDHMS.Time())
+	fmt.Println(e.YMD)
+	fmt.Println(e.YMDHMS)
 	output, err := json.Marshal(e)
 	if err != nil {
 		fmt.Println("Error marshalling data: ", err)

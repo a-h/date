@@ -25,11 +25,11 @@ func Test(t *testing.T) {
 			if err != nil {
 				t.Errorf("unexpected error during unmarshalling: %v", err)
 			}
-			if !test.expectedYMD.Equal(e.YMD.Time()) {
-				t.Errorf("expected YMD of %v, got %v", test.expectedYMD, e.YMD.Time())
+			if !test.expectedYMD.Equal(time.Time(e.YMD)) {
+				t.Errorf("expected YMD of %v, got %v", test.expectedYMD, e.YMD)
 			}
-			if !test.expectedYMDHMS.Equal(e.YMDHMS.Time()) {
-				t.Errorf("expected YMDHMS of %v, got %v", test.expectedYMDHMS, e.YMDHMS.Time())
+			if !test.expectedYMDHMS.Equal(time.Time(e.YMDHMS)) {
+				t.Errorf("expected YMDHMS of %v, got %v", test.expectedYMDHMS, e.YMDHMS)
 			}
 			output, err := json.Marshal(e)
 			if test.input != string(output) {
@@ -134,7 +134,7 @@ func TestUninitializedValues(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error marshalling struct with uninitialized fields: %v", err)
 	}
-	expected := `{"ymd":"0000-01-01","ymdhms":"0000-01-01T00:00:00"}`
+	expected := `{"ymd":"0001-01-01","ymdhms":"0001-01-01T00:00:00"}`
 	if string(bytes) != expected {
 		t.Errorf("expected '%v', got '%v'", expected, string(bytes))
 	}
