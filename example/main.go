@@ -1,19 +1,3 @@
-# date
-
-## JSON date formats for Go.
-
-Marshal and unmarshal date times in `yyyy-MM-dd` and `yyyy-MM-ddThh:mm:ss` formats.
-
-```json
-{
-  "ymd":"2008-12-25",
-  "ymdhms":"1742-12-25T13:32:20"
-}
-```
-
-## Example usage
-
-```go
 package main
 
 import (
@@ -45,4 +29,3 @@ func main() {
 	}
 	fmt.Println(string(output)) // {"ymd":"2008-12-25","ymdhms":"1742-12-25T13:32:20"}
 }
-```
