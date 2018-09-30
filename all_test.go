@@ -128,3 +128,14 @@ type example struct {
 	YMD    YYYYMMDD       `json:"ymd"`
 	YMDHMS YYYYMMDDHHMMSS `json:"ymdhms"`
 }
+
+func TestUninitializedValues(t *testing.T) {
+	bytes, err := json.Marshal(example{})
+	if err != nil {
+		t.Errorf("Error marshalling struct with uninitialized fields: %v", err)
+	}
+	expected := `{"ymd":"0000-01-01","ymdhms":"0000-01-01T00:00:00"}`
+	if string(bytes) != expected {
+		t.Errorf("expected '%v', got '%v'", expected, string(bytes))
+	}
+}

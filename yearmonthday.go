@@ -27,6 +27,12 @@ type YYYYMMDD struct {
 
 // MarshalJSON outputs JSON.
 func (d YYYYMMDD) MarshalJSON() ([]byte, error) {
+	if d.Year == 0 && d.Month == 0 && d.Day == 0 {
+		// Initialise to a minimum date, it's not possible to have a month of zero.
+		d.Year = 0
+		d.Month = time.January
+		d.Day = 1
+	}
 	t := time.Date(d.Year, d.Month, d.Day, 0, 0, 0, 0, time.UTC)
 	return []byte("\"" + t.Format(formatStringYYYYMMDD) + "\""), nil
 }
